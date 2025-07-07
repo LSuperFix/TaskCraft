@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
 import TodoList from './components/TodoList/TodoList';
 import PostForm from './components/PostForm/PostForm';
-import MySelect from './components/UI/MySelect/MySelect';
 import type {SortKeys} from './Types/todo';
 import type { NewTodoProps, TodoProps } from './Types/todo';
 import './app.css'
-import MyInput from './components/UI/MyInput/MyInput';
+import PostFilter from './components/PostFilter/PostFilter';
 
 function App() {
   const [list, setList] = useState<TodoProps[]>([
@@ -13,22 +12,27 @@ function App() {
     { id: 2, taskName: 'Lernen', taskNote: 'React und TypeScript' },
     { id: 3, taskName: 'Kochen', taskNote: 'Abendessen vorbereiten' }
   ])
-
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const [selectedSort, setSelectedSort] = useState<SortKeys | ''>('')
+  const [filter, setFilter] = useState<{
+    searchQuery: string;
+    selectedSort: SortKeys | '';
+  }>({
+    searchQuery: '',
+    selectedSort: ''
+  })
 
   const sortedPost = useMemo(() => {
-    console.log('Введена буква в поиск')
-    if(selectedSort) {
-      return [...list].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+    if (filter.selectedSort) {
+      const key = filter.selectedSort as SortKeys;
+      return [...list].sort((a, b) =>
+        a[key].localeCompare(b[key])
+      );
     }
-      return list
-  }, [selectedSort, list])
+    return list;
+  }, [filter.selectedSort, list]);
 
   const sortedAndSearchedPosts = useMemo(() => {
-    return sortedPost.filter((item) => item.taskName.toLowerCase().includes(searchQuery.toLowerCase()))
-  }, [sortedPost, searchQuery])
+    return sortedPost.filter((item) => item.taskName.toLowerCase().includes(filter.searchQuery.toLowerCase()))
+  }, [sortedPost, filter.searchQuery])
 
   const savePost = (post: NewTodoProps) => {
     setList([...list, { ...post, id: Date.now() }])
@@ -39,28 +43,14 @@ function App() {
   }
 
   const sortPost = (sort: SortKeys) => {
-    setSelectedSort(sort);
+    setFilter({...filter, selectedSort: sort});
   }
 
   return (
     <div className='container'>
       <PostForm savePost={savePost} />
 
-      <MySelect
-        options={[
-          { name: 'Nach Namen', value: 'taskName' },
-          { name: 'Nach Beschreibung', value: 'taskNote' },
-        ]}
-        defaultValue="Sortierung"
-        changeSelection={sortPost} 
-        valueSelectedSort={selectedSort}
-      />
-      
-      <MyInput 
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder='Suchen'
-      />
+      <PostFilter filter = {filter} setFilter = {setFilter} sortPost = {sortPost}/>
       <TodoList list={sortedAndSearchedPosts} delPost={delPost} />
     </div>
   )

@@ -30,4 +30,15 @@ export interface OptionsProps {
   changeSelection: (sort: SortKeys) => void
 }
 
-export type SortKeys = 'taskName' | 'taskNote';
+export type SortKeys = 'taskName' | 'taskNote'
+
+interface Filter {
+  searchQuery: string
+  selectedSort: SortKeys | ''
+}
+
+export interface PostFilterProps {
+  filter: Filter
+  setFilter: React.Dispatch<React.SetStateAction<Filter>>
+  sortPost: (sort: SortKeys) => void
+}
