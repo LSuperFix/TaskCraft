@@ -1,3 +1,4 @@
+import type { ReactNode, Dispatch, SetStateAction } from 'react';
 export interface TodoProps {
   id: number
   taskName: string
@@ -41,4 +42,10 @@ export interface PostFilterProps {
   filter: Filter
   setFilter: React.Dispatch<React.SetStateAction<Filter>>
   sortPost: (sort: SortKeys) => void
+}
+
+export interface MyModalProps {
+  children: ReactNode
+  visible: boolean
+  setVisible: Dispatch<SetStateAction<boolean>>
 }
