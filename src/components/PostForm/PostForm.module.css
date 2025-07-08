@@ -1,0 +1,8 @@
+.postForm {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+}
+.postFormItem {
+  margin: 10px;
+}
