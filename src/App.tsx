@@ -7,7 +7,7 @@ import PostFilter from './components/PostFilter/PostFilter'
 import MyModal from './components/UI/MyModal/MyModal'
 import MyButton from './components/UI/MyButton/MyButton'
 import { usePosts } from './hooks/usePosts'
-import axios from 'axios'
+import PostService from './API/PostService'
 
 function App() {
   const [list, setList] = useState<TodoProps[]>([])
@@ -39,7 +39,8 @@ function App() {
   }
 
 const fetchPosts = async () => {
-  const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
+  const response = await PostService.getAll()
+  if (!response) return
   const adaptedData: TodoProps[] = response.data.map((post: any) => ({
     id: post.id,
     taskName: post.title,      // title -> taskName
