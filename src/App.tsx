@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TodoList from './components/TodoList/TodoList'
 import PostForm from './components/PostForm/PostForm'
 import type { NewTodoProps, TodoProps, SortKeys, Filter } from './Types/todo'
@@ -7,13 +7,10 @@ import PostFilter from './components/PostFilter/PostFilter'
 import MyModal from './components/UI/MyModal/MyModal'
 import MyButton from './components/UI/MyButton/MyButton'
 import { usePosts } from './hooks/usePosts'
+import axios from 'axios'
 
 function App() {
-  const [list, setList] = useState<TodoProps[]>([
-    { id: 1, taskName: 'Kaufen Brot', taskNote: 'Im Supermarkt' },
-    { id: 2, taskName: 'Lernen', taskNote: 'React und TypeScript' },
-    { id: 3, taskName: 'Kochen', taskNote: 'Abendessen vorbereiten' }
-  ])
+  const [list, setList] = useState<TodoProps[]>([])
 
   const [filter, setFilter] = useState<Filter>({
     searchQuery: '',
@@ -40,6 +37,21 @@ function App() {
   const sortPost = (sort: SortKeys) => {
     setFilter({ ...filter, selectedSort: sort })
   }
+
+const fetchPosts = async () => {
+  const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
+  const adaptedData: TodoProps[] = response.data.map((post: any) => ({
+    id: post.id,
+    taskName: post.title,      // title -> taskName
+    taskNote: post.body        // body -> taskNote
+  }))
+  setList(adaptedData)
+}
+
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
 
   return (
     <div className='container'>
