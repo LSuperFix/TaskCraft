@@ -1,11 +1,13 @@
+@import '../../../styles/variables.css';
+
 .myButton {
-  background-color: rgb(67, 94, 213);
+  background-color: var(--primary-color);
   padding: 5px 20px;
   border-radius: 5px;
   margin: 10px;
 }
 
 .myButton:hover {
-    background-color: rgb(37, 61, 169);
+    background-color: var(--primary-color-hover);
     color: white;
 }

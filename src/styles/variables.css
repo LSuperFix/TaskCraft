@@ -1,0 +1,17 @@
+:root {
+  /* 🎨 Цвета */
+  --primary-color: rgb(67, 94, 213);             /* основной цвет */
+  --primary-color-hover: rgb(57, 80, 190);       /* при наведении */
+  --text-color: #212529;                         /* основной цвет текста */
+  --background-color: #f8f9fa;                   /* фоновый цвет */
+  --border-color: #dee2e6;                       /* цвет границ */
+
+  /* 🧱 Размеры и скругления */
+  --border-radius: 8px;
+  --padding-base: 12px;
+  --gap-base: 16px;
+
+  /* 🔠 Шрифты */
+  --font-size-base: 16px;
+  --font-family-base: 'Segoe UI', Roboto, sans-serif;
+}
