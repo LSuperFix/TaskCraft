@@ -1,8 +1,9 @@
 import type { TodoListProps } from "../../Types/todo"
 import TodoItem from "../TodoItem/TodoItem"
+import Loader from "../UI/Loader/Loader"
 import styles from "./TodoList.module.css"
 
-const TodoList: React.FC<TodoListProps> = ({list, delPost}) => {
+const TodoList: React.FC<TodoListProps> = ({list, delPost, isLoading}) => {
   return(
     <div className= {styles.container}>
       {list.length ? (
@@ -14,8 +15,9 @@ const TodoList: React.FC<TodoListProps> = ({list, delPost}) => {
             delPost={delPost}
           />
         ))
-      ) : (
-        <p>List ist leer</p>
+      ) : (isLoading
+          ? <Loader />
+          : <p>List ist leer</p>
       )}
 
     </div>

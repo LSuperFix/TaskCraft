@@ -8,6 +8,7 @@ import MyModal from './components/UI/MyModal/MyModal'
 import MyButton from './components/UI/MyButton/MyButton'
 import { usePosts } from './hooks/usePosts'
 import PostService from './API/PostService'
+import Loader from './components/UI/Loader/Loader'
 
 function App() {
   const [list, setList] = useState<TodoProps[]>([])
@@ -24,6 +25,8 @@ function App() {
     list,
     filter.selectedSort
   )
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const savePost = (post: NewTodoProps) => {
     setList([...list, { ...post, id: Date.now() }])
@@ -47,11 +50,12 @@ const fetchPosts = async () => {
     taskNote: post.body        // body -> taskNote
   }))
   setList(adaptedData)
+  setIsLoading(false)
 }
 
-
   useEffect(() => {
-    fetchPosts()
+    setIsLoading(true)
+    setTimeout(() => fetchPosts(), 2000)
   }, [])
 
   return (
@@ -69,8 +73,10 @@ const fetchPosts = async () => {
         setFilter={setFilter}
         sortPost={sortPost}
       />
-
-      <TodoList list={sortedAndSearchedPosts} delPost={delPost} />
+      { isLoading
+        ? <Loader />
+        : <TodoList list={sortedAndSearchedPosts} delPost={delPost} />
+      }
     </div>
   )
 }
