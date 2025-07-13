@@ -9,6 +9,7 @@ import MyButton from './components/UI/MyButton/MyButton'
 import { usePosts } from './hooks/usePosts'
 import PostService from './API/PostService'
 import Loader from './components/UI/Loader/Loader'
+import { useFetching } from './hooks/useFetching'
 
 function App() {
   const [list, setList] = useState<TodoProps[]>([])
@@ -26,7 +27,17 @@ function App() {
     filter.selectedSort
   )
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [fetchPosts, isLoading, postError] = useFetching(async () => {
+  const response = await PostService.getAll()
+  if (!response) return
+  const adaptedData: TodoProps[] = response.data.map((post: any) => ({
+    id: post.id,
+    taskName: post.title,      // title -> taskName
+    taskNote: post.body        // body -> taskNote
+  }))
+  setList(adaptedData)
+})
+  //const [isLoading, setIsLoading] = useState(false)
 
   const savePost = (post: NewTodoProps) => {
     setList([...list, { ...post, id: Date.now() }])
@@ -41,20 +52,7 @@ function App() {
     setFilter({ ...filter, selectedSort: sort })
   }
 
-const fetchPosts = async () => {
-  const response = await PostService.getAll()
-  if (!response) return
-  const adaptedData: TodoProps[] = response.data.map((post: any) => ({
-    id: post.id,
-    taskName: post.title,      // title -> taskName
-    taskNote: post.body        // body -> taskNote
-  }))
-  setList(adaptedData)
-  setIsLoading(false)
-}
-
   useEffect(() => {
-    setIsLoading(true)
     setTimeout(() => fetchPosts(), 2000)
   }, [])
 
@@ -73,6 +71,7 @@ const fetchPosts = async () => {
         setFilter={setFilter}
         sortPost={sortPost}
       />
+      {postError && <h1>ERROR ${postError}</h1>}
       { isLoading
         ? <Loader />
         : <TodoList list={sortedAndSearchedPosts} delPost={delPost} />
