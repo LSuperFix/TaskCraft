@@ -10,16 +10,20 @@ import { usePosts } from './hooks/usePosts'
 import PostService from './API/PostService'
 import Loader from './components/UI/Loader/Loader'
 import { useFetching } from './hooks/useFetching'
+import { getPageCount, getPagesArray } from './utils/pages'
+import Pagination from './components/UI/Pagination/Pagination'
 
 function App() {
   const [list, setList] = useState<TodoProps[]>([])
-
   const [filter, setFilter] = useState<Filter>({
     searchQuery: '',
     selectedSort: ''
   })
-
   const [visible, setVisible] = useState(false)
+  const [totalPage, setTotalPage] = useState(0)
+  const [limit, setLimit] = useState(10)
+  const [page, setPage] = useState(1)
+  const pagesArray = getPagesArray(totalPage)
 
   const sortedAndSearchedPosts = usePosts(
     filter.searchQuery,
@@ -28,7 +32,7 @@ function App() {
   )
 
   const [fetchPosts, isLoading, postError] = useFetching(async () => {
-  const response = await PostService.getAll()
+  const response = await PostService.getAll(limit, page)
   if (!response) return
   const adaptedData: TodoProps[] = response.data.map((post: any) => ({
     id: post.id,
@@ -36,8 +40,9 @@ function App() {
     taskNote: post.body        // body -> taskNote
   }))
   setList(adaptedData)
-})
-  //const [isLoading, setIsLoading] = useState(false)
+  const totalCount = Number(response.headers['x-total-count'])
+  setTotalPage(getPageCount(totalCount, limit))
+  })
 
   const savePost = (post: NewTodoProps) => {
     setList([...list, { ...post, id: Date.now() }])
@@ -53,8 +58,8 @@ function App() {
   }
 
   useEffect(() => {
-    setTimeout(() => fetchPosts(), 2000)
-  }, [])
+    fetchPosts()
+  }, [page])
 
   return (
     <div className='container'>
@@ -76,6 +81,8 @@ function App() {
         ? <Loader />
         : <TodoList list={sortedAndSearchedPosts} delPost={delPost} />
       }
+
+      <Pagination pagesArray = {pagesArray} page = {page} setPage = {setPage} />
     </div>
   )
 }
